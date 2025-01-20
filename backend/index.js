@@ -19,8 +19,21 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
     // New user joins
     socket.on("new-user-joined", (username) => {
-        users[username] = socket.id; // Store the user with their socket ID
+        console.log(username, users[username]);
+
+        if (users[username]) {
+            // Emit an error if the username already exists
+            socket.emit("error", { message: "Username already taken!" });
+            return;
+        }
+
+        // Add the user to the active list
+        users[username] = socket.id; 
         console.log(`${username} has joined`);
+
+        // Acknowledge successful login
+        socket.emit("success", { message: "Login successful!" });
+
         // Notify all clients of the updated user list
         io.emit("active-user-list", Object.keys(users));
         socket.broadcast.emit("user-joined", username);
@@ -46,11 +59,28 @@ io.on("connection", (socket) => {
     });
 
     // Handle user disconnect
+    socket.on("disconnect", (username_disconnected) => {
+        let disconnectedUser = null;
+        for (let username in users) {
+            if (users[username] === socket.id) {
+                disconnectedUser = username;
+                console.log(`${username} exited`);
+                delete users[username];
+                break;
+            }
+        }
+        if (disconnectedUser) {
+            console.log(`${disconnectedUser} has exited!`);
+            socket.broadcast.emit("user-exited", disconnectedUser);
+            socket.broadcast.emit("active-user-list", Object.keys(users)); // Emit updated list
+        }
+    });
     socket.on("disconnect-user", (username_disconnected) => {
         let disconnectedUser = null;
         for (let username in users) {
             if (users[username] === socket.id) {
                 disconnectedUser = username;
+                console.log(`${username} exited`);
                 delete users[username];
                 break;
             }
@@ -62,6 +92,7 @@ io.on("connection", (socket) => {
         }
     });
 });
+
 
 server.listen(PORT, () => {
     console.log(`Server listening on ${PORT}`);

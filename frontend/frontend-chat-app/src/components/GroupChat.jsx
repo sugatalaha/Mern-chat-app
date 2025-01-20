@@ -8,13 +8,13 @@ function GroupChat() {
     const [activeClients, setActiveClients] = useState([]); 
 
     useEffect(() => {
-        setUsername(localStorage.getItem("Client-username"));
-        const savedChats = localStorage.getItem("messages");
+        setUsername(sessionStorage.getItem("Client-username"));
+        const savedChats = sessionStorage.getItem("messages");
         if (savedChats) {
             setChat(JSON.parse(savedChats));
         }
 
-        const activeUsers=localStorage.getItem("Client-list");
+        const activeUsers=sessionStorage.getItem("Client-list");
         if(activeUsers)
         {
             setActiveClients(JSON.parse(activeUsers));
@@ -29,7 +29,7 @@ function GroupChat() {
                     message:data.message
 
                 }];
-                localStorage.setItem("messages", JSON.stringify(updatedChats));
+                sessionStorage.setItem("messages", JSON.stringify(updatedChats));
                 return updatedChats;
             });
         });
@@ -41,7 +41,7 @@ function GroupChat() {
                     status:"user-joined",
                     message:null
                 }];
-                localStorage.setItem("messages", JSON.stringify(updatedChats));
+                sessionStorage.setItem("messages", JSON.stringify(updatedChats));
                 return updatedChats;
             });
         });
@@ -52,7 +52,7 @@ function GroupChat() {
                     username:data,
                     status:"user-exited"
                 }];
-                localStorage.setItem("messages", JSON.stringify(updatedChats));
+                sessionStorage.setItem("messages", JSON.stringify(updatedChats));
                 return updatedChats;
             });
         });
@@ -60,8 +60,8 @@ function GroupChat() {
         socket.on("active-user-list", (userList) => {
             setActiveClients(userList); // Update the activeClients state
             console.log(userList);
-            localStorage.setItem("Client-list", JSON.stringify(userList));
-            return activeClients // Update localStorage
+            sessionStorage.setItem("Client-list", JSON.stringify(userList));
+            return activeClients // Update sessionStorage
         });
 
         return () => {
@@ -80,7 +80,7 @@ function GroupChat() {
                     username:"you",
                     message:message
                 }];
-                localStorage.setItem("messages", JSON.stringify(updatedChats));
+                sessionStorage.setItem("messages", JSON.stringify(updatedChats));
                 return updatedChats;
             });
             setMessage("");
@@ -88,9 +88,9 @@ function GroupChat() {
     };
 
     return (
-        <div>
-            <h1>Hi, {username}</h1>
+        <div className="group-chat">
             <div className="left-section">
+                <h2 id="username">Hi, {username}</h2>
                 <h3>Active clients:</h3>
                 <ul>
                     {activeClients.map((value, index) => (
@@ -99,33 +99,33 @@ function GroupChat() {
                 </ul>
             </div>
             <div className="right-section">
-            <ul>
-                {/* Display the chat messages */}
-                {chats.map((chat, index) =>{
-                    const chatObject=chat;
-                    if(chatObject?.status==="user-joined" )
-                    {
-                        return (<li key={index} className="status-message">{chatObject.username} joined</li>)
-                    }
-                    else if(chatObject?.status==="user-exited")
-                    {
-                        return (<li key={index} className="status-message">{chatObject.username} exited</li>)
-                    }
-                    else
-                    {
-                        return (<li key={index} className="message">{chatObject.username}:{chatObject.message}</li>)
-                    }
-                })}
-            </ul>
-            <div className="right-bottom-section">
-                <label>Enter your message:</label>
-                <input
-                    type="text"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                />
-                <button onClick={handleSendMessage}>Send</button>
-            </div>
+                <ul>
+                    {/* Display the chat messages */}
+                    {chats.map((chat, index) =>{
+                        const chatObject=chat;
+                        if(chatObject?.status==="user-joined" )
+                        {
+                            return (<li key={index} className="status-message">{chatObject.username} joined</li>)
+                        }
+                        else if(chatObject?.status==="user-exited")
+                        {
+                            return (<li key={index} className="status-message">{chatObject.username} exited</li>)
+                        }
+                        else
+                        {
+                            return (<li key={index} className="message">{chatObject.username}:{chatObject.message}</li>)
+                        }
+                    })}
+                </ul>
+                <div className="right-bottom-section">
+                    <label>Enter your message:</label>
+                    <input
+                        type="text"
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                    />
+                    <button onClick={handleSendMessage}>Send</button>
+                </div>
             </div>
         </div>
     );

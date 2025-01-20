@@ -8,7 +8,7 @@ function Logout()
         <button onClick={(event)=>
         {
             event.preventDefault();
-            const username=localStorage.getItem("Client-username");
+            const username=sessionStorage.getItem("Client-username");
             if(username===null)
             {
                 console.log(username);
@@ -18,9 +18,9 @@ function Logout()
             {
                 socket.emit("disconnect-user",username)
                 console.log("Client has logged out successfully");
-                localStorage.removeItem("Client-username");
-                localStorage.removeItem("messages");
-                localStorage.removeItem("Client-list");
+                sessionStorage.removeItem("Client-username");
+                sessionStorage.removeItem("messages");
+                sessionStorage.removeItem("Client-list");
                 navigate("/",{replace:true});
             }
 
