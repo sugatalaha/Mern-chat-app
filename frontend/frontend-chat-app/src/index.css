@@ -175,13 +175,3 @@ button:hover {
 .right-bottom-section button:hover {
     background-color: #444;
 }
-
-/* Scrollbars */
-/* .left-section ul::-webkit-scrollbar,
-.right-section ul::-webkit-scrollbar {
-    width: 8px;
-}
-
-.left-section ul::-webkit-scrollbar-thumb:hover,
-.right-section ul::-webkit-scrollbar-thumb:hover {
-
