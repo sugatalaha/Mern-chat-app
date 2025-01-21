@@ -59,7 +59,6 @@ function GroupChat() {
 
         socket.on("active-user-list", (userList) => {
             setActiveClients(userList); // Update the activeClients state
-            console.log(userList);
             sessionStorage.setItem("Client-list", JSON.stringify(userList));
             return activeClients // Update sessionStorage
         });

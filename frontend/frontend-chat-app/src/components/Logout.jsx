@@ -11,13 +11,11 @@ function Logout()
             const username=sessionStorage.getItem("Client-username");
             if(username===null)
             {
-                console.log(username);
                 alert("You have not logged in!");
             }
             else
             {
-                socket.emit("disconnect-user",username)
-                console.log("Client has logged out successfully");
+                socket.emit("disconnect-user",username);
                 sessionStorage.removeItem("Client-username");
                 sessionStorage.removeItem("messages");
                 sessionStorage.removeItem("Client-list");
