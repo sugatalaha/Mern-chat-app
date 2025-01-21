@@ -19,7 +19,6 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
     // New user joins
     socket.on("new-user-joined", (username) => {
-        console.log(username, users[username]);
 
         if (users[username]) {
             // Emit an error if the username already exists
@@ -29,7 +28,6 @@ io.on("connection", (socket) => {
 
         // Add the user to the active list
         users[username] = socket.id; 
-        console.log(`${username} has joined`);
 
         // Acknowledge successful login
         socket.emit("success", { message: "Login successful!" });
@@ -41,7 +39,6 @@ io.on("connection", (socket) => {
 
     // Handle new message
     socket.on("new-message", ({ username, message }) => {
-        console.log(username, message);
         socket.broadcast.emit("new-message", { username, message });
     });
 
