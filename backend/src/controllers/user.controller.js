@@ -1,6 +1,7 @@
 import { User } from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import { generateToken } from "../lib/utils.js";
+import cloudinary from "../lib/cloudinary.js";
 
 export const signup=async (req,res)=>
 {
@@ -109,6 +110,17 @@ export const updateProfile= async (req,res)=>
     {
         return res.status(401).json({message:"Profile pic cannot be empty"});
     }
-    const updatedUser=await User.findByIdAndUpdate(userId,{profilePic:profilePic},{new:true});
-    return res.status(200).json()
+    const uploadResponse=cloudinary.uploader.upload(profilePic);
+    const updatedUser=await User.findByIdAndUpdate(userId,{profilePic:(await uploadResponse).secure_url},{new:true});
+    return res.status(200).json(updatedUser);
+}
+
+export const checkAuth=async (req,res)=>
+{
+    try {
+        return res.status(200).json(req.user);
+    } catch (error) {
+        console.log("Problem in checkAuth controller:"+error);
+        return res.status(500).json({message:"Internal server error"});
+    }
 }
