@@ -8,7 +8,7 @@ function Logout()
         <button onClick={(event)=>
         {
             event.preventDefault();
-            const username=sessionStorage.getItem("Client-username");
+            const username=localStorage.getItem("Client-username");
             if(username===null)
             {
                 alert("You have not logged in!");
@@ -16,9 +16,7 @@ function Logout()
             else
             {
                 socket.emit("disconnect-user",username);
-                sessionStorage.removeItem("Client-username");
-                sessionStorage.removeItem("messages");
-                sessionStorage.removeItem("Client-list");
+                localStorage.clear();
                 navigate("/",{replace:true});
             }
 

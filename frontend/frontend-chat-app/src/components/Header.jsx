@@ -5,7 +5,7 @@ function Header()
 {
     return (
             <div className="header">
-            <h1 >Welcome to ChitChat</h1>
+            <h1 >Welcome to InstaChat</h1>
             <Logout/>
             </div>
     )
