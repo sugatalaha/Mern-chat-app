@@ -16,13 +16,9 @@ export const Navbar = () => {
         <Link className="hover:text-gray-300 p-2 rounded-md" to="/settings">
           <FaCog size={20} />
         </Link>
-
-        {/* Profile Button */
-        authUser?(
-            <Link className="hover:text-gray-300 p-2 rounded-md flex items-center space-x-2">
-            <FaUserCircle size={24} to="/profile"/>
-            <span className="text-sm">{authUser?.user?.fullname || "User"}</span></Link>
-        ):""}
+        <Link className="hover:text-gray-300 p-2 rounded-md flex items-center space-x-2" to="/profile">
+        <FaUserCircle size={24} />
+        <span className="text-sm">{authUser?.fullname || "User"}</span></Link>
 
 
         {/* Logout Button */

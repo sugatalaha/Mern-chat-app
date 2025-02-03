@@ -82,7 +82,17 @@ export const login=async (req,res)=>
                 return res.status(400).json({message:"Incorrect password"});
             }
             generateToken(user._id,res);
-            return res.status(200).json({message:"Login successful"});
+            return res.status(200).json(
+                {
+                    fullname:user.fullname,
+                    email:user.email,
+                    profilePic:user.profilePic
+                }
+            );
+        }
+        else
+        {
+            return res.status(400).json("User not logged in!");
         }
         
     } catch (error) {
@@ -94,7 +104,12 @@ export const login=async (req,res)=>
 export const logout=async (req,res)=>
 {
     try {
-        res.cookie("jwt","",{expires:0});
+        res.cookie('jwt', '', {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'None',
+            expires: new Date(0)  // This removes the cookie
+          });
         return res.status(200).json({message:"Logout successful!"});
     } catch (error) {
         console.log("Problem in logout route"+error);
@@ -111,7 +126,7 @@ export const updateProfile= async (req,res)=>
         return res.status(401).json({message:"Profile pic cannot be empty"});
     }
     const uploadResponse=cloudinary.uploader.upload(profilePic);
-    const updatedUser=await User.findByIdAndUpdate(userId,{profilePic:(await uploadResponse).secure_url},{new:true});
+    const updatedUser=await User.findByIdAndUpdate(userId,{profilePic:(await uploadResponse).secure_url},{new:true}).select("-password");
     return res.status(200).json(updatedUser);
 }
 

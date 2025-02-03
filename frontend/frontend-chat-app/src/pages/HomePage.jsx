@@ -1,8 +1,10 @@
+import { Sidebar } from "../components/Sidebar"
+
 export const  HomePage=()=>
 {
     return (
-        <div>
-            HomePage
-        </div>
+        <>
+        <Sidebar/>
+        </>
     )
 }

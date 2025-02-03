@@ -41,8 +41,9 @@ export const useAuthStore=create((set)=>
     logout:async ()=>
     {
         try {
-            await AxiosInstance.post("/auth/logout");
+            const response=await AxiosInstance.post("/auth/logout");
             set({authUser:null});
+            console.log(response.data);
             toast.success("User logged out successfully");
         } catch (error) {
             toast.error("Something went wrong!");
@@ -58,11 +59,28 @@ export const useAuthStore=create((set)=>
             toast.success("User logged in successfully");
         } catch (error) {
             set({authUser:null});
-            toast.error("Something went wrong!");
+            toast.error(error.response.data.message);
             console.log("Problem in login:",error);
         }finally
         {
             set({isLoggingIn:false});
+        }
+    },
+    updateProfile:async (data)=>
+    {
+        try {
+            set({isUpdatingProfile:true});
+            console.log(data);
+            const response=await AxiosInstance.put("/auth/update-profile",data);
+            set({authUser:response.data});
+            toast.success("User profile updated");
+        } catch (error) {
+
+            console.log("Problem in updateprofile:",error);
+        }
+        finally
+        {
+            set({isUpdatingProfile:false});
         }
     }
 }))
