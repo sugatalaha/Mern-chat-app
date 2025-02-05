@@ -31,7 +31,6 @@ export const useAuthStore=create((set,get)=>
     },
     getOnlineUsers:()=>
     {
-        console.log(get().socket);
         get()?.socket?.on("getOnlineUsers", (users) => {
             get().setOnlineUsers(users);
         });
@@ -111,7 +110,6 @@ export const useAuthStore=create((set,get)=>
                 userId:authUser._id
             }
         })
-        console.log("Establishing connection!");
         set({socket:socket});
         
     },

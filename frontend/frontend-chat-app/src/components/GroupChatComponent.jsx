@@ -47,7 +47,7 @@ export const GroupChatComponent = () => {
     };
 
     return (
-        <div className="w-full h-[calc(100vh-4rem)] flex flex-col bg-black text-white">
+        <div className="flex-1 h-screen flex flex-col bg-black text-white">
             {/* Header */}
             <div className="bg-gray-900 p-4 text-lg font-semibold flex justify-between items-center shadow-lg">
                 <span>🚀 Group Chat</span>

@@ -1,11 +1,16 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useMessageStore } from "../store/useMessageStore.js";
+import { useAuthStore } from "../store/useAuthStore.js";
+import { IoSend } from "react-icons/io5";
+import { BsEmojiSmile } from "react-icons/bs";
+import { MdAttachFile } from "react-icons/md";
 
 export const ChatComponent = () => {
     const { messages, getMessages, isMessagesLoading, selectedUser, sendMessage, subscribeToMessages, unsubscribeFromMessages } = useMessageStore();
     const [newMessage, setNewMessage] = useState("");
+    const { authUser } = useAuthStore.getState();
     const messagesEndRef = useRef(null);
-
+    
     // Fetch messages when selectedUser changes
     useEffect(() => {
         if (selectedUser) {
@@ -40,7 +45,7 @@ export const ChatComponent = () => {
     }
 
     return (
-        <div className="flex flex-col h-full bg-gray-100 w-100">
+        <div className="flex flex-col h-screen w-full bg-gray-100">
             {/* Chat Header */}
             <header className="p-4 border-b bg-white flex items-center gap-3 shadow-md">
                 <img
@@ -54,9 +59,9 @@ export const ChatComponent = () => {
             {/* Messages Container */}
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
                 {messages.map((msg, index) => (
-                    <div key={index} className={`flex ${msg.isSender ? "justify-end" : "justify-start"}`}>
-                        <div className={`p-3 rounded-lg max-w-xs text-sm ${msg.isSender ? "bg-blue-500 text-white" : "bg-white border shadow-sm"}`}>
-                            {msg.text}
+                    <div key={index} className={`flex ${msg.senderId === authUser._id ? "justify-end" : "justify-start"}`}>
+                        <div className={`p-3 rounded-lg max-w-xs text-sm ${msg.senderId === authUser._id ? "bg-blue-500 text-white" : "bg-white border shadow-sm"}`}>
+                            <p>{msg.text}</p>
                         </div>
                     </div>
                 ))}
@@ -65,6 +70,12 @@ export const ChatComponent = () => {
 
             {/* Message Input Box */}
             <div className="p-4 border-t bg-white flex items-center gap-3">
+                <button className="text-gray-500 hover:text-gray-700">
+                    <BsEmojiSmile size={24} />
+                </button>
+                <button className="text-gray-500 hover:text-gray-700">
+                    <MdAttachFile size={24} />
+                </button>
                 <input
                     type="text"
                     value={newMessage}
@@ -74,9 +85,9 @@ export const ChatComponent = () => {
                 />
                 <button
                     onClick={handleSendMessage}
-                    className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+                    className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition flex items-center gap-2"
                 >
-                    Send
+                    <IoSend size={20} />
                 </button>
             </div>
         </div>
