@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAuthStore } from "../store/useAuthStore.js";
 import { FiMail, FiLock, FiEye, FiEyeOff } from "react-icons/fi"; // Import icons
 import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
 
 export const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -91,6 +92,9 @@ const validateForm=()=>
             ):
             <div className="w-full py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">Loading...</div>
         }
+        </div>
+        <div>
+          Don't have an account?Click for <Link to="/signup">Sign up</Link>
         </div>
       </div>
     </div>

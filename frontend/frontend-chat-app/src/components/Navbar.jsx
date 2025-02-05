@@ -8,7 +8,7 @@ export const Navbar = () => {
   return (
     <nav className="bg-purple-600 text-white py-3 px-6 flex justify-between items-center shadow-md">
       {/* Left Section */}
-      <div className="text-lg font-semibold">Navbar</div>
+      <div className="text-lg font-semibold">InstaChat</div>
 
       {/* Right Section */}
       <div className="flex items-center space-x-4">
@@ -19,8 +19,11 @@ export const Navbar = () => {
         <Link className="hover:text-gray-300 p-2 rounded-md flex items-center space-x-2" to="/profile">
         <FaUserCircle size={24} />
         <span className="text-sm">{authUser?.fullname || "User"}</span></Link>
+        <Link className="hover:text-gray-300 p-2 rounded-md" to="/groupchat">
+          Group chat
+        </Link>
 
-
+        
         {/* Logout Button */
         authUser?(
             <button 

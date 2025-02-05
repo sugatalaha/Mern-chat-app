@@ -2,16 +2,20 @@ import React, { useEffect, useState, useRef } from "react";
 import { useMessageStore } from "../store/useMessageStore.js";
 
 export const ChatComponent = () => {
-    const { messages, getMessages, isMessageLoading, selectedUser, sendMessage } = useMessageStore();
+    const { messages, getMessages, isMessagesLoading, selectedUser, sendMessage, subscribeToMessages, unsubscribeFromMessages } = useMessageStore();
     const [newMessage, setNewMessage] = useState("");
     const messagesEndRef = useRef(null);
 
     // Fetch messages when selectedUser changes
     useEffect(() => {
         if (selectedUser) {
+            subscribeToMessages();
             getMessages(selectedUser._id);
         }
-    }, [selectedUser?._id, getMessages]);
+        return () => {
+            unsubscribeFromMessages();
+        };
+    }, [selectedUser?._id, getMessages, subscribeToMessages, unsubscribeFromMessages]);
 
     // Scroll to the latest message
     useEffect(() => {
@@ -25,16 +29,18 @@ export const ChatComponent = () => {
         setNewMessage(""); // Clear input after sending
     };
 
+    // If no user is selected
     if (!selectedUser) {
         return <div className="flex items-center justify-center h-full text-gray-600">Select a user to start chatting</div>;
     }
 
-    if (isMessageLoading) {
+    // Show loading state for messages
+    if (isMessagesLoading) {
         return <div className="flex items-center justify-center h-full text-gray-600">Loading messages...</div>;
     }
 
     return (
-        <div className="flex flex-col h-full bg-gray-100 w-80">
+        <div className="flex flex-col h-full bg-gray-100 w-100">
             {/* Chat Header */}
             <header className="p-4 border-b bg-white flex items-center gap-3 shadow-md">
                 <img
