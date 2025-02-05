@@ -51,7 +51,7 @@ io.on("connection", (socket) => {
       {
         delete groupChatUsers[user._id];
       }
-      io.emit("getGroupChatUsers",Object.keys(groupChatUsers));
+      io.emit("getGroupChatUsers",Object.values(groupChatUsers));
   })
 });
 

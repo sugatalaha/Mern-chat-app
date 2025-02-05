@@ -62,13 +62,12 @@ export const sendMessage=async (req,res)=>{
             }
         );
         await newMessage.save();
-        const retrievedMessage=await newMessage.populate("SenderId", "fullname profilePic");
         const receiverSocketId=getReceiverSocketId(receiverId);
         if(receiverSocketId)
         {
-            io.to(receiverSocketId).emit("NewMessage",retrievedMessage);
+            io.to(receiverSocketId).emit("NewMessage",newMessage);
         }
-        return res.status(201).json(retrievedMessage);
+        return res.status(201).json(newMessage);
     } catch (error) {
         console.log("Problem in sendMessage controller:"+error);
         return res.status(500).json({message:"Internal server error"});
