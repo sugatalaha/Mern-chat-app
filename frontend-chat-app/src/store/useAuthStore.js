@@ -45,7 +45,7 @@ export const useAuthStore=create((set,get)=>
             toast.success("User successfully signed up!");
             get().connectSocket();
         } catch (error) {
-            toast.error(error.response.data.message);
+            toast.error(error.response.data.message || "Something went wrong");
             console.log("Problem in sign-up:",error);
         }finally
         {
@@ -78,7 +78,7 @@ export const useAuthStore=create((set,get)=>
             })
         } catch (error) {
             set({authUser:null});
-            toast.error(error.response.data.message);
+            toast.error(error.response.data.message || "Invalid credentials");
             console.log("Problem in login:",error);
         }finally
         {
@@ -93,7 +93,7 @@ export const useAuthStore=create((set,get)=>
             set({authUser:response.data});
             toast.success("User profile updated");
         } catch (error) {
-            toast.error(error.response.data.message);
+            toast.error(error.response.data.message || "Something went wrong");
             console.log("Problem in updateprofile:",error);
         }
         finally
