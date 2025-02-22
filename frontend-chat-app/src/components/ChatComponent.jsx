@@ -2,18 +2,35 @@ import React, { useEffect, useState, useRef } from "react";
 import { useMessageStore } from "../store/useMessageStore.js";
 import { useAuthStore } from "../store/useAuthStore.js";
 import { IoSend } from "react-icons/io5";
-import { BsEmojiSmile } from "react-icons/bs";
 import { MdAttachFile } from "react-icons/md";
 
 export const ChatComponent = () => {
-    const { messages, getMessages, isMessagesLoading, selectedUser, sendMessage, subscribeToMessages, unsubscribeFromMessages } = useMessageStore();
+    const { messages, getMessages, isMessagesLoading, selectedUser, sendMessage, subscribeToMessages, unsubscribeFromMessages, isSending } = useMessageStore();
     const [newMessage, setNewMessage] = useState("");
     const { authUser } = useAuthStore.getState();
+    const [preview,setPreview]=useState("");
+    const [base64Image,setBase64Image]=useState("");
     const messagesEndRef = useRef(null);
+
+    const handleFileSend=async (e)=>
+    {
+        const file=e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              setPreview(reader.result);
+              setBase64Image(reader.result); // Set base64 only after reader finishes
+            };
+            reader.readAsDataURL(file);
+          }
+    }
     
     // Fetch messages when selectedUser changes
     useEffect(() => {
         if (selectedUser) {
+            setPreview("");
+            setNewMessage("");
+            setBase64Image("");
             subscribeToMessages();
             getMessages(selectedUser._id);
         }
@@ -29,9 +46,11 @@ export const ChatComponent = () => {
 
     // Send Message Handler
     const handleSendMessage = () => {
-        if (newMessage.trim() === "") return;
-        sendMessage(newMessage);
+        if (newMessage.trim() === "" && base64Image==="") return;
+        sendMessage({text:newMessage,image:base64Image});
         setNewMessage(""); // Clear input after sending
+        setPreview("");
+        setBase64Image("");
     };
 
     // If no user is selected
@@ -61,7 +80,8 @@ export const ChatComponent = () => {
                 {messages.map((msg, index) => (
                     <div key={index} className={`flex ${msg.senderId === authUser._id ? "justify-end" : "justify-start"}`}>
                         <div className={`p-3 rounded-lg max-w-xs text-sm ${msg.senderId === authUser._id ? "bg-blue-500 text-white" : "bg-white border shadow-sm"}`}>
-                            <p>{msg.text}</p>
+                            {msg.image && <img src={msg.image}/>}
+                            {msg.text && <p>{msg.text}</p>}
                         </div>
                     </div>
                 ))}
@@ -70,11 +90,17 @@ export const ChatComponent = () => {
 
             {/* Message Input Box */}
             <div className="p-4 border-t bg-white flex items-center gap-3">
-                <button className="text-gray-500 hover:text-gray-700">
-                    <BsEmojiSmile size={24} />
-                </button>
-                <button className="text-gray-500 hover:text-gray-700">
+                    {preview && (
+                        <img src={preview} alt="Preview" className="w-32 h-32 object-cover rounded-lg" />
+                    )}
+                <button className="text-gray-500 hover:text-gray-700 relative">
                     <MdAttachFile size={24} />
+                        <input 
+                            type="file" 
+                            accept="image/*" 
+                            onChange={handleFileSend} 
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        />
                 </button>
                 <input
                     type="text"
@@ -82,12 +108,20 @@ export const ChatComponent = () => {
                     onChange={(e) => setNewMessage(e.target.value)}
                     placeholder="Type a message..."
                     className="flex-1 p-2 border rounded-lg outline-none"
+                    onKeyDown={(e)=>
+                    {
+                        if(e.key==="Enter")
+                        {
+                            handleSendMessage();
+                        }
+                    }
+                    }
                 />
                 <button
                     onClick={handleSendMessage}
                     className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition flex items-center gap-2"
                 >
-                    <IoSend size={20} />
+                    <IoSend size={20} aria-disabled={isSending} />
                 </button>
             </div>
         </div>

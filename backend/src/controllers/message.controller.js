@@ -88,13 +88,20 @@ export const getGroupMessages=async (req,res)=>{
 export const sendGroupMessage=async (req,res)=>
 {
     try {
-        const {text}=req.body;
+        const {text,image}=req.body;
+        let imageUrl;
+        if(image)
+        {
+            const uploadResponse=await cloudinary.uploader.upload(image);
+            imageUrl=uploadResponse.secure_url;
+        }
         const id=req.user._id;
         const groupMessage=new Message(
             {
                 SenderId:id,
                 isGroupMessage:true,
-                text:text
+                text:text,
+                image:imageUrl
             }
         );
         await groupMessage.save();

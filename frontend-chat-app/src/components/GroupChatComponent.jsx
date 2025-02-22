@@ -2,6 +2,8 @@ import { useMessageStore } from "../store/useMessageStore.js";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom"; 
 import { FiLogOut } from "react-icons/fi";
+import { MdAttachFile } from "react-icons/md";
+import { IoSend } from "react-icons/io5";
 
 export const GroupChatComponent = () => {
     const { 
@@ -10,12 +12,28 @@ export const GroupChatComponent = () => {
         sendGroupMessage,
         subscribeToGroup,
         unsubscribeFromGroup,
-        getGroupMessages 
+        getGroupMessages,
+        isSending 
     } = useMessageStore();
+    const [preview,setPreview]=useState("");
+    const [base64Image,setBase64Image]=useState("");
 
     const [newMessage, setNewMessage] = useState(""); 
     const chatEndRef = useRef(null);
     const navigate = useNavigate();  
+
+    const handleFileSend=async (e)=>
+        {
+            const file=e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                  setPreview(reader.result);
+                  setBase64Image(reader.result); // Set base64 only after reader finishes
+                };
+                reader.readAsDataURL(file);
+              }
+        }
 
     // Fetch messages & users on mount
     useEffect(() => {
@@ -34,9 +52,11 @@ export const GroupChatComponent = () => {
 
     // Handle sending messages
     const handleSendMessage = async () => {
-        if (newMessage.trim() !== "") {
-            await sendGroupMessage(newMessage);
+        if (newMessage.trim() !== "" || base64Image!="") {
+            await sendGroupMessage({text:newMessage,image:base64Image});
             setNewMessage(""); 
+            setPreview("");
+            setBase64Image("");
         }
     };
 
@@ -73,7 +93,8 @@ export const GroupChatComponent = () => {
                             />
                             <div>
                                 <p className="text-blue-400 font-semibold">{msg?.SenderId?.fullname}</p>
-                                <p className="bg-gray-600 p-3 rounded-lg text-sm mt-1">{msg.text}</p>
+                                {msg.image && <img src={msg.image} className="bg-gray-600 p-3 rounded-lg text-sm mt-1"/>}
+                                {msg.text && <p className="bg-gray-600 p-3 rounded-lg text-sm mt-1">{msg.text}</p>}
                             </div>
                         </div>
                     ))
@@ -83,6 +104,18 @@ export const GroupChatComponent = () => {
 
             {/* Message Input */}
             <div className="bg-gray-900 p-4 flex items-center border-t border-gray-700 shadow-md">
+                    {preview && (
+                        <img src={preview} alt="Preview" className="w-32 h-32 object-cover rounded-lg" />
+                    )}
+                <button className="text-gray-500 hover:text-gray-700 relative">
+                    <MdAttachFile size={24} />
+                        <input 
+                            type="file" 
+                            accept="image/*" 
+                            onChange={handleFileSend} 
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        />
+                </button>
                 <input
                     type="text"
                     value={newMessage}
@@ -100,9 +133,9 @@ export const GroupChatComponent = () => {
                 />
                 <button
                     onClick={handleSendMessage}
-                    className="ml-3 bg-blue-500 px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+                    className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition flex items-center gap-2"
                 >
-                    Send 🚀
+                    <IoSend size={20} aria-disabled={isSending} />
                 </button>
             </div>
         </div>

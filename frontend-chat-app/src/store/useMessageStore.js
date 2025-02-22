@@ -13,6 +13,7 @@ export const useMessageStore = create((set, get) => ({
     groupUsers:[],
     groupMessages:[],
     groupChatSelected:false,
+    isSending:false,
 
     // Fetch Users
     getUsers: async () => {
@@ -53,11 +54,15 @@ export const useMessageStore = create((set, get) => ({
             return;
         }
 
+        set({isSending:true});
         try {
-            const response = await AxiosInstance.post(`/message/send/${selectedUser._id}`, { text: messageData });
+            
+            const response = await AxiosInstance.post(`/message/send/${selectedUser._id}`, messageData);
             set((state) => ({ messages: [...state.messages, response.data] }));
         } catch (error) {
             toast.error(error.response?.data?.message || "Failed to send message");
+        }finally{
+            set({isSending:false});
         }
     },
 
@@ -110,10 +115,10 @@ export const useMessageStore = create((set, get) => ({
         socket.off("GroupMessage");
     },
 
-    sendGroupMessage: async (text)=>
+    sendGroupMessage: async (groupMessage)=>
     {
         try {
-            const response=await AxiosInstance.post("/message/send/groupchat",{text:text});
+            const response=await AxiosInstance.post("/message/send/groupchat",groupMessage);
             
         } catch (error) {
             console.log("Problem in sendGroupMessage function:",error);
